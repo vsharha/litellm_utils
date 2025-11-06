@@ -52,7 +52,7 @@ PROVIDER_FUNCTIONS = {
     Providers.OPENROUTER: request_openrouter,
 }
 
-def request_ai(system_prompt: str, user_text: str=None, filename: str=None, encoded_data: str=None, provider: str | Providers | None = None, model:str | None=None, temperature: float=0.2, json_output: bool = False) -> dict:
+def request_ai(system_prompt: str, user_text: str=None, filename: str=None, encoded_data: str=None, provider: str | Providers | None = None, model:str | None=None, temperature: float=0.2, json_output: bool = False) -> dict | str:
     if provider is None:
         provider = Providers.GOOGLE
     else:

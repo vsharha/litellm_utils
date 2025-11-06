@@ -134,6 +134,47 @@ response = request_gemini(
 print(response)
 ```
 
+### Unified interface with JSON output
+
+The library provides a unified `request_ai()` function that automatically routes to the appropriate provider and supports JSON output parsing:
+
+```python
+from multi_ai_handler.multi_ai_handler import request_ai, Providers
+
+# Basic usage with default provider (Google)
+response = request_ai(
+    system_prompt="You are a helpful assistant.",
+    user_text="What is the capital of France?",
+    temperature=0.7
+)
+print(response)
+
+# Specify a provider and model
+response = request_ai(
+    system_prompt="You are a data extraction expert.",
+    user_text="Extract key information from: John Doe, age 30, lives in NYC",
+    provider=Providers.ANTHROPIC,
+    model="claude-sonnet-4-5-20250929",
+    temperature=0.0
+)
+print(response)
+
+# Request JSON output - automatically parses response
+data = request_ai(
+    system_prompt="You are a JSON formatter. Return valid JSON only.",
+    user_text="Convert to JSON: Name: Alice, Age: 25, City: London",
+    provider="google",
+    json_output=True
+)
+print(data)  # Returns parsed dict
+```
+
+**JSON Output Parsing:**
+- When `json_output=True`, the function automatically extracts and parses JSON from the response
+- Handles responses wrapped in markdown code blocks (```json ... ```)
+- Returns a Python dictionary
+- Raises an exception if JSON parsing fails
+
 ## API Reference
 
 ### Common Parameters
@@ -222,6 +263,39 @@ def request_openrouter(
 ```
 
 Uses OpenAI-compatible format. Requires `OPENROUTER_API_KEY` in environment.
+
+### `request_ai()` (Unified Interface)
+
+Unified function that automatically routes to the appropriate provider with built-in JSON parsing support.
+
+```python
+def request_ai(
+    system_prompt: str,
+    user_text: str = None,
+    filename: str = None,
+    encoded_data: str = None,
+    provider: str | Providers | None = None,
+    model: str | None = None,
+    temperature: float = 0.2,
+    json_output: bool = False
+) -> str | dict
+```
+
+**Parameters:**
+- All common parameters (system_prompt, user_text, filename, encoded_data, temperature)
+- `provider` (str | Providers, optional): Provider to use. Defaults to Google Gemini
+- `model` (str, optional): Model to use. Defaults to first supported model for the provider
+- `json_output` (bool, optional): If True, parses and returns JSON as dict. Default: False
+
+**Returns:**
+- `str` if `json_output=False`
+- `dict` if `json_output=True`
+
+**Supported Providers Enum:**
+- `Providers.GOOGLE`
+- `Providers.ANTHROPIC`
+- `Providers.OPENAI`
+- `Providers.OPENROUTER`
 
 ## Payload Generation
 
