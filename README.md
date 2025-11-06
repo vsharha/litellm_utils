@@ -8,7 +8,6 @@ A unified Python library for interacting with multiple AI providers through a co
 - Support for text-only, file-only, or combined text and file inputs
 - Automatic payload formatting for each provider's API requirements
 - Support for images and documents (PDF)
-- Built-in token usage tracking for Gemini
 - Streaming support for Anthropic Claude
 - Environment-based API key management
 
@@ -359,7 +358,6 @@ except ValueError as e:
 2. **Handle errors**: Wrap API calls in try-except blocks
 3. **Manage API keys securely**: Never commit `.env` files to version control
 4. **Optimize temperature**: Use lower values (0.0-0.3) for factual tasks, higher (0.7-1.0) for creative tasks
-5. **Monitor token usage**: Check console output for Gemini token counts
 
 ## License
 
