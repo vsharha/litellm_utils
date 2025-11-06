@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from multi_ai_handler.ai_handlers import request_openrouter, request_google, request_anthropic, request_openai
 from enum import Enum, auto
@@ -27,7 +28,7 @@ PROVIDER_FUNCTIONS = {
     Providers.OPENROUTER: request_openrouter,
 }
 
-def request_ai(system_prompt: str, user_text: str=None, filename: str=None, encoded_data: str=None, provider: str | Providers | None = None, model:str | None=None, temperature: float=0.2, json_output: bool = False) -> dict | str:
+def request_ai(system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, provider: str | Providers | None = None, model:str | None=None, temperature: float=0.2, json_output: bool = False) -> dict | str:
     if provider is None:
         provider = Providers.GOOGLE
     else:
@@ -36,7 +37,7 @@ def request_ai(system_prompt: str, user_text: str=None, filename: str=None, enco
     if model is None:
         model = SUPPORTED_MODELS[provider][0]
 
-    response_text: str = PROVIDER_FUNCTIONS[provider](system_prompt, user_text, filename, encoded_data, model, temperature)
+    response_text: str = PROVIDER_FUNCTIONS[provider](system_prompt, user_text, file, model, temperature)
 
     if json_output:
         return parse_ai_response(response_text)

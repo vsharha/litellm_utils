@@ -78,18 +78,13 @@ print(response)
 ### Image analysis
 
 ```python
-import base64
 from multi_ai_handler import request_google
 
-# Read and encode image
-with open("image.jpg", "rb") as f:
-    encoded_image = base64.b64encode(f.read()).decode()
-
+# Simply pass the file path
 response = request_google(
     system_prompt="You are an image analysis expert.",
     user_text="Describe what you see in this image.",
-    filename="image.jpg",
-    encoded_data=encoded_image,
+    file="image.jpg",
     model="gemini-1.5-flash",
     temperature=0.0
 )
@@ -99,18 +94,13 @@ print(response)
 ### Document processing
 
 ```python
-import base64
 from multi_ai_handler import request_anthropic
 
-# Read and encode PDF
-with open("document.pdf", "rb") as f:
-    encoded_pdf = base64.b64encode(f.read()).decode()
-
+# Pass the PDF file path
 response = request_anthropic(
     system_prompt="You are a document analysis assistant.",
     user_text="Summarize the key points from this document.",
-    filename="document.pdf",
-    encoded_data=encoded_pdf,
+    file="document.pdf",
     model="claude-3-5-sonnet-20241022",
     temperature=0.0
 )
@@ -120,18 +110,45 @@ print(response)
 ### File-only requests (no text)
 
 ```python
-import base64
 from multi_ai_handler import request_google
-
-with open("chart.png", "rb") as f:
-    encoded_image = base64.b64encode(f.read()).decode()
 
 # User text can be None when only analyzing a file
 response = request_google(
     system_prompt="Extract all text and data from images.",
-    filename="chart.png",
-    encoded_data=encoded_image,
+    file="chart.png",
     model="gemini-1.5-pro"
+)
+print(response)
+```
+
+### Using pathlib.Path
+
+```python
+from multi_ai_handler import request_anthropic
+from pathlib import Path
+
+response = request_anthropic(
+    system_prompt="Analyze this document.",
+    file=Path("documents/report.pdf"),
+    model="claude-3-5-sonnet-20241022"
+)
+print(response)
+```
+
+### Using pre-encoded data
+
+```python
+from multi_ai_handler import request_google
+import base64
+
+# If you already have encoded data
+with open("image.jpg", "rb") as f:
+    encoded_data = base64.b64encode(f.read()).decode()
+
+response = request_google(
+    system_prompt="Describe this image.",
+    file={"filename": "image.jpg", "encoded_data": encoded_data},
+    model="gemini-1.5-flash"
 )
 print(response)
 ```
@@ -185,12 +202,13 @@ All request functions share the following parameters:
 
 - `system_prompt` (str, required): The system instruction for the AI model
 - `user_text` (str, optional): The user's text input
-- `filename` (str, optional): Name of the file being uploaded (used for MIME type detection)
-- `encoded_data` (str, optional): Base64-encoded file data
+- `file` (str | Path | dict, optional): File to process. Can be:
+  - **File path**: `"image.jpg"` or `Path("image.jpg")` - automatically reads and encodes
+  - **Dict**: `{"filename": "image.jpg", "encoded_data": "base64..."}` - for pre-encoded data
 - `model` (str, required): The specific model to use
 - `temperature` (float, optional): Controls randomness (0.0 = deterministic, 1.0 = creative). Default: 0.0
 
-**Note**: Either `user_text` or `filename`/`encoded_data` must be provided.
+**Note**: Either `user_text` or `file` must be provided.
 
 ### `request_anthropic()`
 
@@ -200,8 +218,7 @@ Makes a request to Anthropic's Claude API with streaming support.
 def request_anthropic(
     system_prompt: str,
     user_text: str = None,
-    filename: str = None,
-    encoded_data: str = None,
+    file: str | Path | dict = None,
     model: str = None,
     temperature: float = 0.0
 ) -> str
@@ -209,16 +226,15 @@ def request_anthropic(
 
 **Supported file types**: Images (PNG, JPEG, GIF, WebP), Documents (PDF, DOCX, TXT, etc.)
 
-### `request_gemini()`
+### `request_google()`
 
 Makes a request to Google's Gemini API with token usage reporting.
 
 ```python
-def request_gemini(
+def request_google(
     system_prompt: str,
     user_text: str = None,
-    filename: str = None,
-    encoded_data: str = None,
+    file: str | Path | dict = None,
     model: str = None,
     temperature: float = 0.0
 ) -> str
@@ -236,8 +252,7 @@ Makes a request to OpenAI's API.
 def request_openai(
     system_prompt: str,
     user_text: str = None,
-    filename: str = None,
-    encoded_data: str = None,
+    file: str | Path | dict = None,
     model: str = None,
     temperature: float = 0.0,
     link: str = None
@@ -257,8 +272,7 @@ Makes a request through OpenRouter's unified API.
 def request_openrouter(
     system_prompt: str,
     user_text: str = None,
-    filename: str = None,
-    encoded_data: str = None,
+    file: str | Path | dict = None,
     model: str = None,
     temperature: float = 0.0
 ) -> str
@@ -274,8 +288,7 @@ Unified function that automatically routes to the appropriate provider with buil
 def request_ai(
     system_prompt: str,
     user_text: str = None,
-    filename: str = None,
-    encoded_data: str = None,
+    file: str | Path | dict = None,
     provider: str | Providers | None = None,
     model: str | None = None,
     temperature: float = 0.2,
@@ -284,7 +297,7 @@ def request_ai(
 ```
 
 **Parameters:**
-- All common parameters (system_prompt, user_text, filename, encoded_data, temperature)
+- All common parameters (system_prompt, user_text, file, temperature)
 - `provider` (str | Providers, optional): Provider to use. Defaults to Google Gemini
 - `model` (str, optional): Model to use. Defaults to first supported model for the provider
 - `json_output` (bool, optional): If True, parses and returns JSON as dict. Default: False
@@ -315,10 +328,12 @@ These functions handle:
 
 ## Error Handling
 
-The library raises `ValueError` in the following cases:
+The library raises errors in the following cases:
 
-- Neither `user_text` nor `filename` is provided
-- MIME type cannot be detected from filename
+- `ValueError`: Neither `user_text` nor `file` is provided
+- `ValueError`: MIME type cannot be detected from filename
+- `FileNotFoundError`: File path provided but file doesn't exist
+- `ValueError`: Path provided is not a file (e.g., is a directory)
 - Invalid API credentials
 
 Example:
@@ -329,8 +344,11 @@ from multi_ai_handler import request_anthropic
 try:
     response = request_anthropic(
         system_prompt="You are helpful.",
+        file="document.pdf",
         model="claude-3-5-sonnet-20241022"
     )
+except FileNotFoundError as e:
+    print(f"File not found: {e}")
 except ValueError as e:
     print(f"Error: {e}")
 ```
