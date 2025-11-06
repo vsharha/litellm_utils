@@ -1,0 +1,12 @@
+[project]
+name = "multi-ai-handler"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "anthropic>=0.72.0",
+    "dotenv>=0.9.9",
+    "google-generativeai>=0.8.5",
+    "openai>=2.7.1",
+]
