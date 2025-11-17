@@ -2,14 +2,13 @@ import json
 from pathlib import Path
 
 from multi_ai_handler.ai_handlers import request_openrouter, request_google, request_anthropic, request_openai, request_ollama
-from enum import Enum, auto
+from aenum import Enum, auto
 
-class LowercaseValueMixin:
-    @staticmethod
-    def _generate_next_value_(name):
-        return name.lower()
+class LowercaseEnum(str, Enum):
+    def _generate_next_value_(self):
+        return self.lower()
 
-class Providers(LowercaseValueMixin, str, Enum):
+class Providers(LowercaseEnum):
     GOOGLE = auto()
     ANTHROPIC = auto()
     OPENAI = auto()
