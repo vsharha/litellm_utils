@@ -79,12 +79,16 @@ def request_anthropic(system_prompt: str, user_text: str=None, file: str | Path 
 
 def request_openrouter(system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0) -> str:
     link: str="https://openrouter.ai/api/v1"
-    return request_openai(system_prompt, user_text, file, model, temperature, link)
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    return request_openai(system_prompt, user_text, file, model, temperature, link, api_key)
 
-def request_openai(system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, link:str | None=None) -> str:
+def request_openai(system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, link:str | None=None, api_key:str | None = None) -> str:
+    if api_key is None:
+        api_key = os.getenv("OPENAI_API_KEY")
+
     client = OpenAI(
         base_url=link,
-        api_key=os.getenv("OPENROUTER_API_KEY"),
+        api_key=api_key,
     )
 
     filename, encoded_data = _process_file(file)

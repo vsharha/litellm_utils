@@ -4,11 +4,12 @@ from pathlib import Path
 from multi_ai_handler.ai_handlers import request_openrouter, request_google, request_anthropic, request_openai, request_ollama
 from enum import Enum, auto
 
-class LowercaseEnum(str, Enum):
-    def _generate_next_value_(self, start, count, last_values):
-        return self.lower()
+class LowercaseValueMixin:
+    @staticmethod
+    def _generate_next_value_(name):
+        return name.lower()
 
-class Providers(LowercaseEnum):
+class Providers(LowercaseValueMixin, str, Enum):
     GOOGLE = auto()
     ANTHROPIC = auto()
     OPENAI = auto()
