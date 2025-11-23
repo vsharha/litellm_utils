@@ -15,6 +15,8 @@ from multi_ai_handler.providers.ollama import OllamaProvider
 from multi_ai_handler.providers.openai import OpenAIProvider
 from multi_ai_handler.providers.openrouter import OpenrouterProvider
 
+from multi_ai_handler.ai_provider import AIProvider
+
 __all__ = [
     # Main unified interface
     "request_ai",
@@ -27,4 +29,5 @@ __all__ = [
     "OllamaProvider",
     "OpenAIProvider",
     "OpenrouterProvider",
+    "AIProvider"
 ]
