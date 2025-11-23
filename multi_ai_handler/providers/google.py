@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Iterator, AsyncIterator
 
 from multi_ai_handler.ai_provider import AIProvider
+from multi_ai_handler.utils import parse_ai_response
 from multi_ai_handler.generate_payload import generate_google_payload
 
 class GoogleProvider(AIProvider):
@@ -12,7 +13,7 @@ class GoogleProvider(AIProvider):
         self.client = genai.Client()
         self.async_client = self.client.aio
 
-    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, local: bool=False) -> str:
+    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, local: bool=False, json_output: bool=False) -> str | dict:
         payload: list = generate_google_payload(user_text, file, local=local)
 
         response = self.client.models.generate_content(
@@ -24,6 +25,8 @@ class GoogleProvider(AIProvider):
             )
         )
 
+        if json_output:
+            return parse_ai_response(response.text)
         return response.text
 
     def stream(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> Iterator[str]:
@@ -55,7 +58,7 @@ class GoogleProvider(AIProvider):
             "output_token_limit": response.output_token_limit,
         }
 
-    async def agenerate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> str:
+    async def agenerate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False, json_output: bool=False) -> str | dict:
         payload: list = generate_google_payload(user_text, file, local=local)
 
         response = await self.async_client.models.generate_content(
@@ -67,6 +70,8 @@ class GoogleProvider(AIProvider):
             )
         )
 
+        if json_output:
+            return parse_ai_response(response.text)
         return response.text
 
     async def astream(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> AsyncIterator[str]:

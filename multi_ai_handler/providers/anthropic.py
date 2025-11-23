@@ -1,6 +1,7 @@
 from anthropic import Anthropic, AsyncAnthropic
 
 from multi_ai_handler.ai_provider import AIProvider
+from multi_ai_handler.utils import parse_ai_response
 from pathlib import Path
 from typing import Iterator, AsyncIterator
 
@@ -13,7 +14,7 @@ class AnthropicProvider(AIProvider):
         self.client = Anthropic()
         self.async_client = AsyncAnthropic()
 
-    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, local: bool=False) -> str:
+    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, local: bool=False, json_output: bool=False) -> str | dict:
         messages: list = generate_claude_payload(user_text, file, local=local)
 
         response: str = ""
@@ -28,6 +29,8 @@ class AnthropicProvider(AIProvider):
             for text in stream.text_stream:
                 response += text
 
+        if json_output:
+            return parse_ai_response(response)
         return response
 
     def stream(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> Iterator[str]:
@@ -55,7 +58,7 @@ class AnthropicProvider(AIProvider):
             "display_name": response.display_name,
         }
 
-    async def agenerate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> str:
+    async def agenerate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False, json_output: bool=False) -> str | dict:
         messages: list = generate_claude_payload(user_text, file, local=local)
 
         response: str = ""
@@ -70,6 +73,8 @@ class AnthropicProvider(AIProvider):
             async for text in stream.text_stream:
                 response += text
 
+        if json_output:
+            return parse_ai_response(response)
         return response
 
     async def astream(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> AsyncIterator[str]:

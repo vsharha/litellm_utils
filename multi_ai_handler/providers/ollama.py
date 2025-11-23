@@ -1,4 +1,5 @@
 from multi_ai_handler.ai_provider import AIProvider
+from multi_ai_handler.utils import parse_ai_response
 from pathlib import Path
 from typing import Iterator, AsyncIterator
 import requests
@@ -45,7 +46,7 @@ class OllamaProvider(AIProvider):
                 f"Ollama server responded with {resp.status_code} (server error)"
             )
 
-    def generate(self, system_prompt: str, user_text: str = None, file: str | Path | dict | None = None, model: str = None, temperature: float = 0.0, local: bool=False) -> str:
+    def generate(self, system_prompt: str, user_text: str = None, file: str | Path | dict | None = None, model: str = None, temperature: float = 0.0, local: bool=False, json_output: bool=False) -> str | dict:
         self._check_server()
 
         messages: list = generate_ollama_payload(user_text, system_prompt, file)
@@ -56,7 +57,10 @@ class OllamaProvider(AIProvider):
             options={"temperature": temperature},
         )
 
-        return response['message']['content']
+        response_text = response['message']['content']
+        if json_output:
+            return parse_ai_response(response_text)
+        return response_text
 
     def stream(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> Iterator[str]:
         self._check_server()
@@ -97,7 +101,7 @@ class OllamaProvider(AIProvider):
             "parameters": data.get("details", {}).get("parameter_size"),
         }
 
-    async def agenerate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> str:
+    async def agenerate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False, json_output: bool=False) -> str | dict:
         self._check_server()
 
         messages: list = generate_ollama_payload(user_text, system_prompt, file)
@@ -109,7 +113,10 @@ class OllamaProvider(AIProvider):
             options={"temperature": temperature},
         )
 
-        return response['message']['content']
+        response_text = response['message']['content']
+        if json_output:
+            return parse_ai_response(response_text)
+        return response_text
 
     async def astream(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> AsyncIterator[str]:
         self._check_server()

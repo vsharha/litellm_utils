@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from typing import Iterator, AsyncIterator
 
@@ -9,28 +8,6 @@ from multi_ai_handler.providers.cerebras import CerebrasProvider
 from multi_ai_handler.providers.google import GoogleProvider
 from multi_ai_handler.providers.ollama import OllamaProvider
 from multi_ai_handler.providers.openai import OpenAIProvider
-
-
-def parse_ai_response(response_text: str) -> dict:
-    response_text = response_text.strip()
-    try:
-        return json.loads(response_text)
-    except json.JSONDecodeError:
-        start: int = 0
-        if "```json" in response_text:
-            start = response_text.find("```json") + 7
-        elif "```" in response_text:
-            start = response_text.find("```") + 3
-
-        if start != 0:
-            end: int = response_text.find("```", start)
-            if end != -1:
-                response_text = response_text[start:end]
-
-    try:
-        return json.loads(response_text)
-    except json.decoder.JSONDecodeError as e:
-        raise Exception(e)
 
 
 class AIProviderManager:
@@ -47,17 +24,11 @@ class AIProviderManager:
     def register_provider(self, name: str, provider: type[AIProvider]) -> None:
         self.providers[name] = provider
 
-    def generate(self, provider: str, model:str, system_prompt: str | None=None, user_text: str=None, file: str | Path | dict | None=None, temperature: float=0.2, local:bool=False, json_output: bool = False) -> dict | str:
+    def generate(self, provider: str, model: str, system_prompt: str | None=None, user_text: str=None, file: str | Path | dict | None=None, temperature: float=0.2, local: bool=False, json_output: bool=False) -> dict | str:
         Provider = self.providers[provider]
         client = Provider()
 
-        response_text: str = client.generate(system_prompt, user_text, file, model, temperature, local=local)
-
-        if json_output:
-            return parse_ai_response(response_text)
-
-        else:
-            return response_text
+        return client.generate(system_prompt, user_text, file, model, temperature, local=local, json_output=json_output)
 
     def stream(self, provider: str, model: str, system_prompt: str | None=None, user_text: str=None, file: str | Path | dict | None=None, temperature: float=0.2, local: bool=False) -> Iterator[str]:
         Provider = self.providers[provider]
@@ -83,16 +54,11 @@ class AIProviderManager:
 
         return client.get_model_info(model)
 
-    async def agenerate(self, provider: str, model: str, system_prompt: str | None=None, user_text: str=None, file: str | Path | dict | None=None, temperature: float=0.2, local: bool=False, json_output: bool = False) -> dict | str:
+    async def agenerate(self, provider: str, model: str, system_prompt: str | None=None, user_text: str=None, file: str | Path | dict | None=None, temperature: float=0.2, local: bool=False, json_output: bool=False) -> dict | str:
         Provider = self.providers[provider]
         client = Provider()
 
-        response_text: str = await client.agenerate(system_prompt, user_text, file, model, temperature, local=local)
-
-        if json_output:
-            return parse_ai_response(response_text)
-
-        return response_text
+        return await client.agenerate(system_prompt, user_text, file, model, temperature, local=local, json_output=json_output)
 
     async def astream(self, provider: str, model: str, system_prompt: str | None=None, user_text: str=None, file: str | Path | dict | None=None, temperature: float=0.2, local: bool=False) -> AsyncIterator[str]:
         Provider = self.providers[provider]

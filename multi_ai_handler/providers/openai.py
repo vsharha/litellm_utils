@@ -1,6 +1,7 @@
 from openai import OpenAI, AsyncOpenAI
 
 from multi_ai_handler.ai_provider import AIProvider
+from multi_ai_handler.utils import parse_ai_response
 import os
 from pathlib import Path
 from typing import Iterator, AsyncIterator
@@ -22,7 +23,7 @@ class OpenAIProvider(AIProvider):
             api_key=api_key,
         )
 
-    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, local: bool=False) -> str:
+    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, local: bool=False, json_output: bool=False) -> str | dict:
         if self.local:
             local = True
 
@@ -34,7 +35,10 @@ class OpenAIProvider(AIProvider):
             temperature=temperature
         )
 
-        return completion.choices[0].message.content
+        response_text = completion.choices[0].message.content
+        if json_output:
+            return parse_ai_response(response_text)
+        return response_text
 
     def stream(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> Iterator[str]:
         if self.local:
@@ -65,7 +69,7 @@ class OpenAIProvider(AIProvider):
             "owned_by": response.owned_by,
         }
 
-    async def agenerate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> str:
+    async def agenerate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False, json_output: bool=False) -> str | dict:
         if self.local:
             local = True
 
@@ -77,7 +81,10 @@ class OpenAIProvider(AIProvider):
             temperature=temperature
         )
 
-        return completion.choices[0].message.content
+        response_text = completion.choices[0].message.content
+        if json_output:
+            return parse_ai_response(response_text)
+        return response_text
 
     async def astream(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> AsyncIterator[str]:
         if self.local:

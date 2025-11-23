@@ -4,7 +4,7 @@ from typing import Iterator, AsyncIterator
 
 class AIProvider(ABC):
     @abstractmethod
-    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, local:bool=False) -> str:
+    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, local:bool=False, json_output: bool=False) -> str | dict:
         pass
 
     @abstractmethod
@@ -12,7 +12,7 @@ class AIProvider(ABC):
         pass
 
     @abstractmethod
-    async def agenerate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> str:
+    async def agenerate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False, json_output: bool=False) -> str | dict:
         pass
 
     @abstractmethod
