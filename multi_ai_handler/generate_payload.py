@@ -139,7 +139,7 @@ def generate_claude_payload(user_text: str | None, file: str | Path | dict | Non
 
     return messages
 
-def generate_openai_payload_local(user_text: str | None, system_prompt: str, file: str | Path | dict | None=None) -> list[dict[str, Any]]:
+def generate_local_payload(user_text: str | None, system_prompt: str, file: str | Path | dict | None=None) -> list[dict[str, Any]]:
     if not file and not user_text:
         raise ValueError("Either filename or user_text must be provided.")
 

@@ -1,7 +1,7 @@
 from multi_ai_handler.ai_provider import AIProvider
 from pathlib import Path
 
-from multi_ai_handler.generate_payload import generate_openai_payload_local
+from multi_ai_handler.generate_payload import generate_local_payload
 
 try:
     import ollama
@@ -17,7 +17,7 @@ class OllamaProvider(AIProvider):
                 "Ollama is not installed. Install it with: pip install multi-ai-handler[ollama]"
             )
 
-        messages: list = generate_openai_payload_local(user_text, system_prompt, file)
+        messages: list = generate_local_payload(user_text, system_prompt, file)
 
         response = ollama.chat(
             model=model,

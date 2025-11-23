@@ -8,7 +8,7 @@ try:
 except ImportError:
     CEREBRAS_AVAILABLE = False
 
-from multi_ai_handler.generate_payload import generate_openai_payload_local
+from multi_ai_handler.generate_payload import generate_local_payload
 
 
 class CerebrasProvider(AIProvider):
@@ -24,7 +24,7 @@ class CerebrasProvider(AIProvider):
                 "Cerebras is not installed. Install it with: pip install multi-ai-handler[extra]"
             )
 
-        messages: list = generate_openai_payload_local(user_text, system_prompt, file)
+        messages: list = generate_local_payload(user_text, system_prompt, file)
 
         response = self.client.chat.completions.create(
             messages=messages,
