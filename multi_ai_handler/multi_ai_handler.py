@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from multi_ai_handler.ai_provider import AIProvider
 from multi_ai_handler.providers.openrouter import OpenrouterProvider
 from multi_ai_handler.providers.anthropic import AnthropicProvider
 from multi_ai_handler.providers.cerebras import CerebrasProvider
@@ -8,9 +9,10 @@ from multi_ai_handler.providers.google import GoogleProvider
 from multi_ai_handler.providers.ollama import OllamaProvider
 from multi_ai_handler.providers.openai import OpenAIProvider
 
+
 class MultiAIHandler:
     def __init__(self):
-        self.providers = {
+        self.providers: dict[str, type[AIProvider]] = {
             "google": GoogleProvider,
             "anthropic": AnthropicProvider,
             "openai": OpenAIProvider,
@@ -18,6 +20,9 @@ class MultiAIHandler:
             "ollama": OllamaProvider,
             "cerebras": CerebrasProvider,
         }
+
+    def register_provider(self, name: str, provider: type[AIProvider]) -> None:
+        self.providers[name] = provider
 
     def request_ai(self, provider: str, model:str, system_prompt: str | None=None, user_text: str=None, file: str | Path | dict | None=None, temperature: float=0.2, local:bool=False, json_output: bool = False) -> dict | str:
         Provider = self.providers[provider]
