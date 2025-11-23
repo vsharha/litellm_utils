@@ -1,13 +1,7 @@
-from multi_ai_handler import request_ai, MultiAIHandler
-
-
+from multi_ai_handler import request_ai
 
 def main():
-    client = MultiAIHandler()
-
-    for provider, models in client.list_models().items():
-        print(provider)
-        print(models)
+    print(request_ai(provider="cerebras", model="gpt-oss-120b", user_text="What's in the file", file="test/2024-10-31_aliexpress_02.pdf"))
 
 if __name__ == "__main__":
     main()

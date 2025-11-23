@@ -2,7 +2,7 @@ from multi_ai_handler.ai_provider import AIProvider
 from pathlib import Path
 import requests
 
-from multi_ai_handler.generate_payload import generate_openai_payload
+from multi_ai_handler.generate_payload import generate_ollama_payload
 
 try:
     import ollama
@@ -42,10 +42,10 @@ class OllamaProvider(AIProvider):
                 f"Ollama server responded with {resp.status_code} (server error)"
             )
 
-    def generate(self, system_prompt: str, user_text: str = None, file: str | Path | dict | None = None, model: str = None, temperature: float = 0.0) -> str:
+    def generate(self, system_prompt: str, user_text: str = None, file: str | Path | dict | None = None, model: str = None, temperature: float = 0.0, local: bool=False) -> str:
         self._check_server()
 
-        messages: list = generate_openai_payload(user_text, system_prompt, file, local=True)
+        messages: list = generate_ollama_payload(user_text, system_prompt, file)
 
         response = ollama.chat(
             model=model,
