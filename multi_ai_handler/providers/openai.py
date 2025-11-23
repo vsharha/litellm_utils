@@ -17,8 +17,8 @@ class OpenAIProvider(AIProvider):
             api_key=api_key,
         )
 
-    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0) -> str:
-        messages: list = generate_openai_payload(user_text, system_prompt, file)
+    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, local: bool=False) -> str:
+        messages: list = generate_openai_payload(user_text, system_prompt, file, local=local)
 
         completion = self.client.chat.completions.create(
             model=model,

@@ -20,11 +20,6 @@ class OllamaProvider(AIProvider):
         self.base_url = base_url.rstrip("/")
 
     def _check_server(self):
-        if not OLLAMA_AVAILABLE:
-            raise ImportError(
-                "Ollama is not installed. Install it with: pip install multi-ai-handler[ollama]"
-            )
-
         try:
             resp = requests.get(f"{self.base_url}/api/tags", timeout=2)
         except requests.exceptions.ConnectionError:
@@ -43,6 +38,11 @@ class OllamaProvider(AIProvider):
             )
 
     def generate(self, system_prompt: str, user_text: str = None, file: str | Path | dict | None = None, model: str = None, temperature: float = 0.0) -> str:
+        if not OLLAMA_AVAILABLE:
+            raise ImportError(
+                "Ollama is not installed. Install it with: pip install multi-ai-handler[ollama]"
+            )
+
         self._check_server()
 
         messages: list = generate_local_payload(user_text, system_prompt, file)

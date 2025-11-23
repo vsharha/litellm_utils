@@ -12,8 +12,8 @@ class AnthropicProvider(AIProvider):
         super().__init__()
         self.client = Anthropic()
 
-    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0) -> str:
-        messages: list = generate_claude_payload(user_text, file)
+    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, local: bool=False) -> str:
+        messages: list = generate_claude_payload(user_text, file, local=local)
 
         response: str = ""
 
