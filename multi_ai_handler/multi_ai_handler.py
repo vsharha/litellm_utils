@@ -34,20 +34,20 @@ class MultiAIHandler:
 _handler = MultiAIHandler()
 
 def request_ai(
-    system_prompt: str,
+    provider: str | None = None,
+    model: str | None = None,
+    system_prompt: str | None = None,
     user_text: str | None = None,
     file: str | Path | dict | None = None,
-    provider: str | Providers | None = None,
-    model: str | None = None,
     temperature: float = 0.2,
     json_output: bool = False,
 ) -> dict | str:
     return _handler.request_ai(
+        provider=provider,
+        model=model,
         system_prompt=system_prompt,
         user_text=user_text,
         file=file,
-        provider=provider,
-        model=model,
         temperature=temperature,
         json_output=json_output,
     )
