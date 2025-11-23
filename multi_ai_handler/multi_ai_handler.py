@@ -19,17 +19,29 @@ class MultiAIHandler:
             "cerebras": CerebrasProvider,
         }
 
-    def request_ai(self, provider: str, model:str, system_prompt: str | None=None, user_text: str=None, file: str | Path | dict | None=None, temperature: float=0.2, json_output: bool = False) -> dict | str:
+    def request_ai(self, provider: str, model:str, system_prompt: str | None=None, user_text: str=None, file: str | Path | dict | None=None, temperature: float=0.2, local:bool=False, json_output: bool = False) -> dict | str:
         Provider = self.providers[provider]
-        provider_obj = Provider()
+        client = Provider()
 
-        response_text: str = provider_obj.generate(system_prompt, user_text, file, model, temperature)
+        response_text: str = client.generate(system_prompt, user_text, file, model, temperature, local=local)
 
         if json_output:
             return parse_ai_response(response_text)
 
         else:
             return response_text
+
+    def list_models(self) -> dict:
+        models = {}
+
+        for name, Provider in self.providers.items():
+            try:
+                client = Provider()
+                models[name] = client.list_models()
+            except Exception as e:
+                models[name] = []
+
+        return models
 
 _handler = MultiAIHandler()
 
@@ -41,6 +53,7 @@ def request_ai(
     file: str | Path | dict | None = None,
     temperature: float = 0.2,
     json_output: bool = False,
+    local: bool = False,
 ) -> dict | str:
     return _handler.request_ai(
         provider=provider,
@@ -50,6 +63,7 @@ def request_ai(
         file=file,
         temperature=temperature,
         json_output=json_output,
+        local=local,
     )
 
 def parse_ai_response(response_text: str) -> dict:

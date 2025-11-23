@@ -43,11 +43,7 @@ local = [
     "docling>=2.61.1",
     "easyocr>=1.7.2",
 ]
-extra = [
-    "cerebras>=0.0.1",
-]
 all = [
-    "cerebras>=0.0.1",
     "ollama>=0.6.0",
     "docling>=2.61.1",
     "easyocr>=1.7.2",

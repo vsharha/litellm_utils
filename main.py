@@ -1,17 +1,16 @@
-from multi_ai_handler import request_ai, OpenAIProvider, AnthropicProvider, OpenrouterProvider, OllamaProvider, \
-    GoogleProvider
+from multi_ai_handler import request_ai, MultiAIHandler
+
 
 
 def main():
-    client = OllamaProvider()
-    for m in client.list_models():
-        print(m)
+    client = MultiAIHandler()
 
-    client = GoogleProvider()
+    for provider, models in client.list_models().items():
+        if provider in ["openrouter", "openai"]:
+            continue
 
-    for m in client.list_models():
-        print(m)
-    # print(request_ai(system_prompt="You're a helpful assistant", user_text="Hello", file="test/2024-10-31_aliexpress_02.pdf", provider="google"))
+        print(provider)
+        print(models)
 
 if __name__ == "__main__":
     main()
