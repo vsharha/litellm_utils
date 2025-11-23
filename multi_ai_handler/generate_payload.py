@@ -165,8 +165,7 @@ def generate_openai_payload_local(user_text: str | None, system_prompt: str, fil
         file_text = extract_structured_md(filename, encoded_data)
         if file_text:
             content.append(f"""
-<<<FILE CONTENT>>>
-[Filename: {filename}]
+<<<FILE CONTENT ({filename})>>>
 {file_text}
 <<<END FILE CONTENT>>>
 """)
