@@ -1,15 +1,17 @@
 from multi_ai_handler.ai_provider import AIProvider
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, AsyncIterator
 import requests
 
 from multi_ai_handler.generate_payload import generate_ollama_payload
 
 try:
     import ollama
+    from ollama import AsyncClient
     OLLAMA_AVAILABLE = True
 except ImportError:
     OLLAMA_AVAILABLE = False
+    AsyncClient = None
 
 class OllamaServerError(RuntimeError):
     pass
@@ -94,3 +96,34 @@ class OllamaProvider(AIProvider):
             "size": data.get("size"),
             "parameters": data.get("details", {}).get("parameter_size"),
         }
+
+    async def agenerate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> str:
+        self._check_server()
+
+        messages: list = generate_ollama_payload(user_text, system_prompt, file)
+
+        async_client = AsyncClient(host=self.base_url)
+        response = await async_client.chat(
+            model=model,
+            messages=messages,
+            options={"temperature": temperature},
+        )
+
+        return response['message']['content']
+
+    async def astream(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model: str=None, temperature: float=0.0, local: bool=False) -> AsyncIterator[str]:
+        self._check_server()
+
+        messages: list = generate_ollama_payload(user_text, system_prompt, file)
+
+        async_client = AsyncClient(host=self.base_url)
+        stream = await async_client.chat(
+            model=model,
+            messages=messages,
+            options={"temperature": temperature},
+            stream=True
+        )
+
+        async for chunk in stream:
+            if chunk['message']['content']:
+                yield chunk['message']['content']

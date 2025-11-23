@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, AsyncIterator
 
 from multi_ai_handler.ai_provider import AIProvider
 from multi_ai_handler.providers.openrouter import OpenrouterProvider
@@ -61,6 +61,24 @@ class AIProviderManager:
 
         return client.get_model_info(model)
 
+    async def agenerate(self, provider: str, model: str, system_prompt: str | None=None, user_text: str=None, file: str | Path | dict | None=None, temperature: float=0.2, local: bool=False, json_output: bool = False) -> dict | str:
+        Provider = self.providers[provider]
+        client = Provider()
+
+        response_text: str = await client.agenerate(system_prompt, user_text, file, model, temperature, local=local)
+
+        if json_output:
+            return parse_ai_response(response_text)
+
+        return response_text
+
+    async def astream(self, provider: str, model: str, system_prompt: str | None=None, user_text: str=None, file: str | Path | dict | None=None, temperature: float=0.2, local: bool=False) -> AsyncIterator[str]:
+        Provider = self.providers[provider]
+        client = Provider()
+
+        async for chunk in client.astream(system_prompt, user_text, file, model, temperature, local=local):
+            yield chunk
+
 _handler = AIProviderManager()
 
 def request_ai(
@@ -108,6 +126,47 @@ def get_model_info(provider: str, model: str) -> dict:
 
 def list_models() -> dict[str, list[str]]:
     return _handler.list_models()
+
+async def arequest_ai(
+    provider: str | None = None,
+    model: str | None = None,
+    system_prompt: str | None = None,
+    user_text: str | None = None,
+    file: str | Path | dict | None = None,
+    temperature: float = 0.2,
+    json_output: bool = False,
+    local: bool = False,
+) -> dict | str:
+    return await _handler.agenerate(
+        provider=provider,
+        model=model,
+        system_prompt=system_prompt,
+        user_text=user_text,
+        file=file,
+        temperature=temperature,
+        json_output=json_output,
+        local=local,
+    )
+
+async def astream_ai(
+    provider: str | None = None,
+    model: str | None = None,
+    system_prompt: str | None = None,
+    user_text: str | None = None,
+    file: str | Path | dict | None = None,
+    temperature: float = 0.2,
+    local: bool = False,
+) -> AsyncIterator[str]:
+    async for chunk in _handler.astream(
+        provider=provider,
+        model=model,
+        system_prompt=system_prompt,
+        user_text=user_text,
+        file=file,
+        temperature=temperature,
+        local=local,
+    ):
+        yield chunk
 
 def parse_ai_response(response_text: str) -> dict:
     response_text = response_text.strip()

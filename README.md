@@ -1,6 +1,6 @@
 # Multi AI Handler
 
-A unified Python library for interacting with multiple AI providers through a consistent interface. Supports text and file inputs across OpenAI, Anthropic Claude, Google Gemini, OpenRouter, and Ollama (local LLMs).
+A unified Python library for interacting with multiple AI providers through a consistent interface. Supports text and file inputs across OpenAI, Anthropic Claude, Google Gemini, OpenRouter, Cerebras and Ollama (local LLMs).
 
 ## Features
 
@@ -10,7 +10,6 @@ A unified Python library for interacting with multiple AI providers through a co
 - Support for images and documents (PDF)
 - Local LLM support with Ollama
 - Advanced document processing with Docling (OCR, table extraction)
-- Streaming support for Anthropic Claude
 - Environment-based API key management
 - Optional dependencies for lightweight installations
 
@@ -35,7 +34,7 @@ A unified Python library for interacting with multiple AI providers through a co
 pip install multi-ai-handler
 ```
 
-This installs the core package with support for Anthropic, Google, OpenAI, and OpenRouter.
+This installs the core package with support for Anthropic, Google, OpenAI (as well as Cerebras and OpenRouter through the OpenAI api).
 
 ### Optional Dependencies
 
