@@ -1,9 +1,5 @@
-from dotenv import load_dotenv
-
 from multi_ai_handler.providers.openai import OpenAIProvider
 import os
-
-load_dotenv()
 
 class OpenrouterProvider(OpenAIProvider):
     def __init__(self):

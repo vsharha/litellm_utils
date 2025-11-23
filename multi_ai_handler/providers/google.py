@@ -1,12 +1,9 @@
 from google import genai
 from google.genai import types
-from dotenv import load_dotenv
 from pathlib import Path
 
 from multi_ai_handler.ai_provider import AIProvider
 from multi_ai_handler.generate_payload import generate_google_payload
-
-load_dotenv()
 
 class GoogleProvider(AIProvider):
     def __init__(self):
