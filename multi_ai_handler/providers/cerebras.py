@@ -18,7 +18,7 @@ class CerebrasProvider(AIProvider):
             api_key=os.environ.get("CEREBRAS_API_KEY")
         )
 
-    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, link:str | None=None, api_key:str | None = None) -> str:
+    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0) -> str:
         if not CEREBRAS_AVAILABLE:
             raise ImportError(
                 "Cerebras is not installed. Install it with: pip install multi-ai-handler[extra]"

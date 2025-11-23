@@ -13,7 +13,7 @@ class AnthropicProvider(AIProvider):
             api_key=os.getenv("ANTHROPIC_API_KEY")
         )
 
-    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, link:str | None=None, api_key:str | None = None) -> str:
+    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0) -> str:
         messages: list = generate_claude_payload(user_text, file)
 
         response: str = ""

@@ -13,7 +13,7 @@ class GoogleProvider(AIProvider):
         super().__init__()
         self.client = genai.Client()
 
-    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0, link:str | None=None, api_key:str | None = None) -> str:
+    def generate(self, system_prompt: str, user_text: str=None, file: str | Path | dict | None=None, model:str=None, temperature: float=0.0) -> str:
         payload: list = generate_google_payload(user_text, file)
 
         response = self.client.models.generate_content(
