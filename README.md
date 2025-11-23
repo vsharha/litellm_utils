@@ -5,6 +5,7 @@ A unified Python library for interacting with multiple AI providers through a co
 ## Features
 
 - Unified interface for multiple AI providers
+- **Conversation history** for multi-turn interactions
 - **Streaming support** for real-time token output
 - **Async support** for concurrent workloads
 - Support for images and documents (PDF)
@@ -105,6 +106,41 @@ async def main():
 asyncio.run(main())
 ```
 
+### Conversation History
+
+Use the `Conversation` class for multi-turn interactions:
+
+```python
+from multi_ai_handler import AIProviderManager
+
+manager = AIProviderManager()
+conv = manager.conversation(
+    provider="google",
+    model="gemini-2.0-flash",
+    system_prompt="You are a helpful assistant.",
+)
+
+response = conv.send("My name is Alice.")
+print(response.content)
+
+response = conv.send("What's my name?")  # Remembers context
+print(response.content)
+
+conv.clear()  # Reset conversation
+```
+
+With file processing:
+
+```python
+conv = manager.conversation(provider="google", model="gemini-2.0-flash")
+
+response = conv.send("Summarize this document", file="report.pdf")
+print(response.content)
+
+response = conv.send("What are the key findings?")  # Follow-up without re-sending file
+print(response.content)
+```
+
 ### Model Information
 
 ```python
@@ -135,6 +171,7 @@ info = get_model_info(provider="google", model="models/gemini-2.0-flash")
 | `model` | str | Model name (e.g., `"gemini-2.5-flash"`, `"claude-sonnet-4-5-20250929"`) |
 | `system_prompt` | str | System instruction |
 | `user_text` | str | User input text |
+| `messages` | list[dict] | Conversation history from previous `response.history` |
 | `file` | str/Path | File path for images or documents |
 | `temperature` | float | Randomness (0.0-1.0), default: 0.2 |
 | `json_output` | bool | Parse response as JSON, default: False |
@@ -143,6 +180,7 @@ info = get_model_info(provider="google", model="models/gemini-2.0-flash")
 ### Classes
 
 - `AIProviderManager` - Manage providers, register custom providers
+- `Conversation` - Multi-turn conversation with automatic history management
 - `AIProvider` - Abstract base class for implementing custom providers
 - Provider classes: `AnthropicProvider`, `GoogleProvider`, `OpenAIProvider`, `OpenrouterProvider`, `OllamaProvider`, `CerebrasProvider`
 
