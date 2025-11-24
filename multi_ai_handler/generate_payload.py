@@ -34,7 +34,7 @@ def process_local_file(filename: str, encoded_data: str) -> str:
 """)
 
 
-def build_openai_user_content(user_text: str | None, file: str | Path | dict | None=None, local: bool=False) -> list[dict[str, Any]]:
+def build_openai_user_content(user_text: str | None, file: str | Path | dict | None=None, extract_file_content: bool=False) -> list[dict[str, Any]]:
     if not file and not user_text:
         raise ValueError("Either filename or user_text must be provided.")
 
@@ -49,7 +49,7 @@ def build_openai_user_content(user_text: str | None, file: str | Path | dict | N
     if file:
         filename, encoded_data = _process_file(file)
 
-        if local:
+        if extract_file_content:
             content.append({
                 "type": "text",
                 "text": (user_text + "\n" if user_text else "") + process_local_file(filename, encoded_data)
@@ -84,7 +84,7 @@ def build_openai_user_content(user_text: str | None, file: str | Path | dict | N
     return content
 
 
-def generate_openai_payload(user_text: str | None, system_prompt: str, file: str | Path | dict | None=None, local: bool=False, messages: list[dict] | None=None) -> list[dict[str, Any]]:
+def generate_openai_payload(user_text: str | None, system_prompt: str, file: str | Path | dict | None=None, extract_file_content: bool=False, messages: list[dict] | None=None) -> list[dict[str, Any]]:
     result = []
 
     if system_prompt:
@@ -98,7 +98,7 @@ def generate_openai_payload(user_text: str | None, system_prompt: str, file: str
         result.extend(messages)
 
     # Add new user message
-    content = build_openai_user_content(user_text, file, local)
+    content = build_openai_user_content(user_text, file, extract_file_content)
     result.append({
         "role": "user",
         "content": content
