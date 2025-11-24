@@ -35,7 +35,6 @@ def process_local_file(filename: str, encoded_data: str) -> str:
 
 
 def build_openai_user_content(user_text: str | None, file: str | Path | dict | None=None, local: bool=False) -> list[dict[str, Any]]:
-    """Build user message content for OpenAI format."""
     if not file and not user_text:
         raise ValueError("Either filename or user_text must be provided.")
 
@@ -86,11 +85,6 @@ def build_openai_user_content(user_text: str | None, file: str | Path | dict | N
 
 
 def generate_openai_payload(user_text: str | None, system_prompt: str, file: str | Path | dict | None=None, local: bool=False, messages: list[dict] | None=None) -> list[dict[str, Any]]:
-    """Generate full message payload for OpenAI API.
-
-    If messages is provided, it should contain the conversation history (without system message).
-    The system message will be prepended, and the new user message will be appended.
-    """
     result = []
 
     if system_prompt:
