@@ -1,4 +1,7 @@
-from multi_ai_handler.handler import request_ai
+import json
+
+from multi_ai_handler.handler import request_ai, list_models
+
 
 def json_example():
     print(request_ai(
@@ -11,4 +14,4 @@ def json_example():
     ))
 
 if __name__ == "__main__":
-    json_example()
+    print(json.dumps(list(list_models("cerebras")), indent=4))

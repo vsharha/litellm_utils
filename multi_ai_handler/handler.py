@@ -26,6 +26,12 @@ def request_ai(provider: str, model: str, system_prompt: str | None=None, user_t
     else:
         return response_str
 
+def list_models(provider: str) -> list[dict]:
+    models = litellm.models_by_provider.get(provider)
+    if models is None:
+        return []
+    return models
+
 def parse_ai_response(response_text: str) -> dict:
     response_text = response_text.strip()
 
