@@ -6,13 +6,13 @@ def parse_ai_response(response_text: str) -> dict:
     try:
         return json.loads(response_text)
     except json.JSONDecodeError:
-        start: int = 0
+        start = None
         if "```json" in response_text:
             start = response_text.find("```json") + 7
         elif "```" in response_text:
             start = response_text.find("```") + 3
 
-        if start != 0:
+        if start is not None:
             end: int = response_text.find("```", start)
             if end != -1:
                 response_text = response_text[start:end].strip()
