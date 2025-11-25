@@ -30,8 +30,8 @@ def stream_example():
 
 def json_example():
     print(json.dumps(request_ai(
-        provider="ollama",
-        model="gpt-oss",
+        provider="cerebras",
+        model="gpt-oss-120b",
         system_prompt="You're an intelligent json converter tool",
         user_text="Convert to json",
         file="test/2024-10-31_aliexpress_02.pdf",

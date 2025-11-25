@@ -24,7 +24,7 @@ def requires_preprocessing(provider: str, model: str) -> bool:
     return not info.get("supports_pdf_input", False)
 
 
-def validate_preprocessing_config(
+def _validate_preprocessing_config(
     provider: str,
     model: str,
     preprocess_file_content: bool | None,
@@ -44,7 +44,7 @@ def request_ai(provider: str, model: str, system_prompt: str | None=None, user_t
     model_name = f"{provider}/{model}"
 
     if file is not None:
-        needs_preprocessing = validate_preprocessing_config(provider, model, preprocess_file_content)
+        needs_preprocessing = _validate_preprocessing_config(provider, model, preprocess_file_content)
 
         if preprocess_file_content is None:
             preprocess_file_content = needs_preprocessing
@@ -67,7 +67,7 @@ def stream_ai(provider: str, model: str, system_prompt: str | None=None, user_te
     model_name = f"{provider}/{model}"
 
     if file is not None:
-        needs_preprocessing = validate_preprocessing_config(provider, model, preprocess_file_content)
+        needs_preprocessing = _validate_preprocessing_config(provider, model, preprocess_file_content)
 
         if preprocess_file_content is None:
             preprocess_file_content = needs_preprocessing
