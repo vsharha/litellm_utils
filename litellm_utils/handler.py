@@ -1,3 +1,4 @@
+import logging
 from typing import Iterator
 
 import litellm
@@ -8,7 +9,7 @@ from litellm import get_model_info
 from litellm_utils.generate_payload import generate_openai_payload
 from litellm_utils.utils import parse_ai_response
 
-from litellm_utils import logger
+logger = logging.getLogger("litellm_utils")
 
 
 def requires_preprocessing(provider: str, model: str) -> bool:
