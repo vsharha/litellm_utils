@@ -7,7 +7,7 @@ A lightweight Python wrapper around [LiteLLM](https://github.com/BerriAI/litellm
 - Simple unified interface built on LiteLLM
 - **Conversation history** for multi-turn interactions
 - **Streaming support** for real-time token output
-- Support for images and documents (PDF)
+- Support for images and documents (PDF, single or multiple files)
 - Advanced document processing with Docling (OCR, table extraction)
 - Automatic PDF handling based on model capabilities
 - Access to 100+ LLMs through LiteLLM
@@ -67,12 +67,23 @@ data = request_ai(
 
 ### File Processing
 
+Single file:
 ```python
 response = request_ai(
     provider="anthropic",
     model="claude-sonnet-4-5-20250929",
     system_prompt="Summarize this document.",
     file="document.pdf"
+)
+```
+
+Multiple files:
+```python
+response = request_ai(
+    provider="anthropic",
+    model="claude-sonnet-4-5-20250929",
+    system_prompt="Compare these documents.",
+    file=["document1.pdf", "document2.pdf", "image.jpg"]
 )
 ```
 
@@ -125,7 +136,12 @@ With file processing:
 ```python
 conv = Conversation(provider="google", model="gemini-2.0-flash")
 
+# Single file
 response = conv.send("Summarize this document", file="report.pdf")
+print(response)
+
+# Multiple files
+response = conv.send("Compare these documents", file=["doc1.pdf", "doc2.pdf"])
 print(response)
 
 response = conv.send("What are the key findings?")  # Follows up on context
@@ -155,7 +171,7 @@ Generate a response from an AI model.
 - `system_prompt` (str, optional): System instruction
 - `user_text` (str, optional): User input text
 - `messages` (list[dict], optional): Conversation history in OpenAI format
-- `file` (str/Path, optional): Path to image or document file
+- `file` (str/Path/list, optional): Path to image or document file, or list of file paths for multiple files
 - `temperature` (float, optional): Sampling temperature (0.0-1.0), default: 0.2
 - `json_output` (bool, optional): Parse response as JSON, default: False
 - `preprocess_file_content` (bool, optional): Use Docling for document processing, default: False (auto-detected)

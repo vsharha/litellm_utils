@@ -21,7 +21,7 @@ class Conversation:
     def send(
         self,
         user_text: str | None = None,
-        file: str | Path | dict | None = None,
+        file: str | Path | dict | list[str | Path | dict] | None = None,
         json_output: bool = False,
         preprocess_file_content: bool | None = None,
     ) -> str | dict:
@@ -49,7 +49,7 @@ class Conversation:
     def stream(
         self,
         user_text: str | None = None,
-        file: str | Path | dict | None = None,
+        file: str | Path | dict | list[str | Path | dict] | None = None,
         preprocess_file_content: bool | None = None,
     ) -> Iterator[str]:
         full_response = ""

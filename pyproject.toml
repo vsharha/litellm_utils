@@ -1,6 +1,6 @@
 [project]
 name = "litellm_utils"
-version = "1.0.0"
+version = "1.1.0"
 description = "Lightweight Python wrapper for LiteLLM with simplified interface for 100+ AI providers. Supports text, images, and documents with conversation management."
 readme = "README.md"
 requires-python = ">=3.11"

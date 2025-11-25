@@ -39,6 +39,18 @@ def json_example():
     ), indent=4))
 
 
+def multiple_files_example():
+    """Example of processing multiple files at once"""
+    response = request_ai(
+        provider="anthropic",
+        model="claude-sonnet-4-5-20250929",
+        system_prompt="You are a helpful assistant",
+        user_text="What do you see in these files?",
+        file=["test/2024-10-31_aliexpress_02.pdf"]  # Add more files as needed
+    )
+    print(response)
+
+
 def list_models_example():
     print(json.dumps(list(list_models("cerebras")), indent=4))
 
