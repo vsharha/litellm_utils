@@ -70,4 +70,4 @@ def conversation_example():
 
 
 if __name__ == "__main__":
-    conversation_example()
+    print(json_example())

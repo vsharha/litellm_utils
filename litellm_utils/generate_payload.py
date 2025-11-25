@@ -2,8 +2,11 @@ import mimetypes
 from typing import Any
 import base64
 from pathlib import Path
+import logging
 
 from litellm_utils.extract_md import extract_structured_md
+
+logger = logging.getLogger("litellm_utils")
 
 def _process_file(file: str | Path | dict | None) -> tuple[str | None, str | None]:
     if file is None:
@@ -50,6 +53,7 @@ def build_openai_user_content(user_text: str | None, file: str | Path | dict | N
         filename, encoded_data = _process_file(file)
 
         if preprocess_file_content:
+            logger.info(f"Preprocessing file content locally for: {filename}")
             content.append({
                 "type": "text",
                 "text": (user_text + "\n" if user_text else "") + process_local_file(filename, encoded_data)
