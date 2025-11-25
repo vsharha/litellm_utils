@@ -13,11 +13,11 @@ def requires_preprocessing(provider: str, model: str) -> bool:
     model_name = f"{provider}/{model}"
 
     try:
-        model_info = get_model_info(model_name)
+        info = get_model_info(model_name)
     except:
         return False
 
-    return "supports_pdf_input" not in model_info or not model_info.get("supports_pdf_input")
+    return not info.get("supports_pdf_input", False)
 
 def request_ai(provider: str, model: str, system_prompt: str | None=None, user_text: str=None, messages: list[dict]=None, file: str | Path | dict | None=None, temperature: float=0.2, preprocess_file_content: bool=False, json_output: bool=False) -> str | dict:
     model_name = f"{provider}/{model}"
@@ -42,7 +42,7 @@ def request_ai(provider: str, model: str, system_prompt: str | None=None, user_t
 def stream_ai(provider: str, model: str, system_prompt: str | None=None, user_text: str=None, messages: list[dict]=None, file: str | Path | dict | None=None, temperature: float=0.2, preprocess_file_content: bool=False) -> Iterator[str]:
     model_name = f"{provider}/{model}"
 
-    if not requires_preprocessing(provider, model):
+    if requires_preprocessing(provider, model):
         preprocess_file_content = True
 
     payload: list = generate_openai_payload(user_text, system_prompt, file, preprocess_file_content, messages)
