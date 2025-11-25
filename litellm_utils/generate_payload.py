@@ -3,7 +3,7 @@ from typing import Any
 import base64
 from pathlib import Path
 
-from multi_ai_handler.extract_md import extract_structured_md
+from litellm_utils.extract_md import extract_structured_md
 
 def _process_file(file: str | Path | dict | None) -> tuple[str | None, str | None]:
     if file is None:

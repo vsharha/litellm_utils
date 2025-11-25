@@ -2,8 +2,8 @@ import json
 
 from litellm import get_model_info
 
-from multi_ai_handler import Conversation
-from multi_ai_handler.handler import request_ai, stream_ai, list_models, supports_pdf_input
+from litellm_utils import Conversation
+from litellm_utils.handler import request_ai, stream_ai, list_models, supports_pdf_input
 
 
 def basic_example():

@@ -1,7 +1,7 @@
 from typing import Iterator
 from pathlib import Path
 
-from multi_ai_handler.handler import request_ai, stream_ai
+from litellm_utils.handler import request_ai, stream_ai
 
 
 class Conversation:

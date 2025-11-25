@@ -1,49 +1,48 @@
-# Multi AI Handler
+# litellm_utils
 
-A unified Python library for interacting with multiple AI providers through a consistent interface. Supports text and file inputs across OpenAI, Anthropic Claude, Google Gemini, OpenRouter, Cerebras and Ollama (local LLMs).
+A lightweight Python wrapper around [LiteLLM](https://github.com/BerriAI/litellm) that provides a simplified interface for interacting with multiple AI providers. Supports text and file inputs across 100+ LLMs including OpenAI, Anthropic Claude, Google Gemini, and more.
 
 ## Features
 
-- Unified interface for multiple AI providers
+- Simple unified interface built on LiteLLM
 - **Conversation history** for multi-turn interactions
 - **Streaming support** for real-time token output
-- **Async support** for concurrent workloads
 - Support for images and documents (PDF)
-- Local LLM support with Ollama
 - Advanced document processing with Docling (OCR, table extraction)
-- Model information retrieval
+- Automatic PDF handling based on model capabilities
+- Access to 100+ LLMs through LiteLLM
 
 ## Installation
 
 ```bash
-pip install multi-ai-handler
+pip install litellm_utils
 ```
 
 **Optional dependencies:**
 ```bash
-pip install multi-ai-handler[ollama]   # Local LLM support
-pip install multi-ai-handler[docling]  # Document processing (OCR, tables)
-pip install multi-ai-handler[all]      # All optional dependencies
+pip install litellm_utils[docling]  # Document processing (OCR, tables)
+pip install litellm_utils[all]      # All optional dependencies
 ```
 
 ## Setup
 
-Create a `.env` file with your API keys:
+Configure your API keys as environment variables. LiteLLM supports many providers:
 
 ```env
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
-CEREBRAS_API_KEY=your_cerebras_api_key_here
-GEMINI_API_KEY=your_gemini_api_key_here
 OPENAI_API_KEY=your_openai_api_key_here
-OPENROUTER_API_KEY=your_openrouter_api_key_here
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
+# ... and many more providers supported by LiteLLM
 ```
+
+See [LiteLLM documentation](https://docs.litellm.ai/docs/providers) for all supported providers.
 
 ## Usage
 
 ### Basic Request
 
 ```python
-from multi_ai_handler import request_ai
+from litellm_utils import request_ai
 
 response = request_ai(
     provider="google",  # or "anthropic", "openai", "openrouter", "cerebras", "ollama"
@@ -80,30 +79,14 @@ response = request_ai(
 ### Streaming
 
 ```python
-from multi_ai_handler import stream_ai
+from litellm_utils import stream_ai
 
-for chunk in stream_ai(provider="cerebras", model="llama-3.3-70b", user_text="Write a poem"):
+for chunk in stream_ai(
+    provider="openai",
+    model="gpt-4o-mini",
+    user_text="Write a poem about Python"
+):
     print(chunk, end="", flush=True)
-```
-
-### Async Support
-
-```python
-import asyncio
-from multi_ai_handler import arequest_ai, astream_ai
-
-async def main():
-    # Concurrent requests
-    responses = await asyncio.gather(
-        arequest_ai(provider="google", model="gemini-2.0-flash", user_text="Hello"),
-        arequest_ai(provider="anthropic", model="claude-sonnet-4-20250514", user_text="Hello"),
-    )
-
-    # Async streaming
-    async for chunk in astream_ai(provider="openai", model="gpt-4o-mini", user_text="Hi"):
-        print(chunk, end="", flush=True)
-
-asyncio.run(main())
 ```
 
 ### Conversation History
@@ -111,78 +94,101 @@ asyncio.run(main())
 Use the `Conversation` class for multi-turn interactions:
 
 ```python
-from multi_ai_handler import AIProviderManager
+from litellm_utils import Conversation
 
-manager = AIProviderManager()
-conv = manager.conversation(
+conv = Conversation(
     provider="anthropic",
     model="claude-sonnet-4-20250514",
-    system_prompt="You are a helpful assistant.",
+    system_prompt="You are a helpful assistant."
 )
 
 response = conv.send("My name is Alice.")
-print(response.content)
+print(response)
 
 response = conv.send("What's my name?")  # Remembers context
-print(response.content)
+print(response)
 
-conv.clear()  # Reset conversation
+conv.clear_history()  # Reset conversation
+```
+
+With streaming:
+
+```python
+conv = Conversation(provider="openai", model="gpt-4o-mini")
+
+for chunk in conv.stream("Tell me a story"):
+    print(chunk, end="", flush=True)
 ```
 
 With file processing:
 
 ```python
-conv = manager.conversation(provider="google", model="gemini-2.0-flash")
+conv = Conversation(provider="google", model="gemini-2.0-flash")
 
 response = conv.send("Summarize this document", file="report.pdf")
-print(response.content)
+print(response)
 
-response = conv.send("What are the key findings?")  # Follow-up without re-sending file
-print(response.content)
+response = conv.send("What are the key findings?")  # Follows up on context
+print(response)
 ```
 
 ### Model Information
 
 ```python
-from multi_ai_handler import list_models, get_model_info
+from litellm_utils import list_models
 
-all_models = list_models()  # {'google': [...], 'anthropic': [...], ...}
-info = get_model_info(provider="anthropic", model="claude-sonnet-4-20250514")
+# List models for a specific provider
+openai_models = list_models("openai")
+anthropic_models = list_models("anthropic")
 ```
 
 ## API Reference
 
 ### Functions
 
-| Function | Description |
-|----------|-------------|
-| `request_ai(provider, model, ...)` | Generate a response |
-| `stream_ai(provider, model, ...)` | Stream response tokens |
-| `arequest_ai(provider, model, ...)` | Async generation |
-| `astream_ai(provider, model, ...)` | Async streaming |
-| `list_models()` | List all available models |
-| `get_model_info(provider, model)` | Get model metadata |
+#### `request_ai(provider, model, **kwargs)`
+Generate a response from an AI model.
 
-### Parameters
+**Parameters:**
+- `provider` (str): Provider name (e.g., `"openai"`, `"anthropic"`, `"google"`)
+- `model` (str): Model name (e.g., `"gpt-4o-mini"`, `"claude-sonnet-4-20250514"`)
+- `system_prompt` (str, optional): System instruction
+- `user_text` (str, optional): User input text
+- `messages` (list[dict], optional): Conversation history in OpenAI format
+- `file` (str/Path, optional): Path to image or document file
+- `temperature` (float, optional): Sampling temperature (0.0-1.0), default: 0.2
+- `json_output` (bool, optional): Parse response as JSON, default: False
+- `preprocess_file_content` (bool, optional): Use Docling for document processing, default: False (auto-detected)
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `provider` | str | `"google"`, `"anthropic"`, `"openai"`, `"openrouter"`, `"cerebras"`, `"ollama"` |
-| `model` | str | Model name (e.g., `"gemini-2.5-flash"`, `"claude-sonnet-4-5-20250929"`) |
-| `system_prompt` | str | System instruction |
-| `user_text` | str | User input text |
-| `messages` | list[dict] | Conversation history from previous `response.history` |
-| `file` | str/Path | File path for images or documents |
-| `temperature` | float | Randomness (0.0-1.0), default: 0.2 |
-| `json_output` | bool | Parse response as JSON, default: False |
-| `local` | bool | Use local text extraction (Docling), default: False |
+**Returns:** `str` or `dict` (if `json_output=True`)
+
+#### `stream_ai(provider, model, **kwargs)`
+Stream response tokens from an AI model.
+
+**Parameters:** Same as `request_ai()` except `json_output`
+
+**Returns:** `Iterator[str]`
+
+#### `list_models(provider)`
+List available models for a provider.
+
+**Parameters:**
+- `provider` (str): Provider name
+
+**Returns:** `list[dict]`
 
 ### Classes
 
-- `AIProviderManager` - Manage providers, register custom providers
-- `Conversation` - Multi-turn conversation with automatic history management
-- `AIProvider` - Abstract base class for implementing custom providers
-- Provider classes: `AnthropicProvider`, `GoogleProvider`, `OpenAIProvider`, `OpenrouterProvider`, `OllamaProvider`, `CerebrasProvider`
+#### `Conversation`
+Multi-turn conversation with automatic history management.
+
+**Methods:**
+- `__init__(provider, model, system_prompt=None, temperature=0.2)` - Initialize conversation
+- `send(user_text, file=None, json_output=False, preprocess_file_content=False)` - Send a message
+- `stream(user_text, file=None, preprocess_file_content=False)` - Stream a response
+- `get_history()` - Get conversation history
+- `clear_history()` - Clear conversation history
+- `set_system_prompt(system_prompt)` - Update system prompt
 
 ## License
 

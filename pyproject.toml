@@ -1,23 +1,22 @@
 [project]
-name = "multi-ai-handler"
-version = "2.2.0"
-description = "Unified Python interface for multiple AI providers with support for text, images, and documents."
+name = "litellm_utils"
+version = "1.0.0"
+description = "Lightweight Python wrapper for LiteLLM with simplified interface for 100+ AI providers. Supports text, images, and documents with conversation management."
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [
     {name = "Viktor Sharha"}
 ]
-keywords = ["ai", "openai", "anthropic", "claude", "gemini", "openrouter", "llm", "api"]
+keywords = ["litellm", "ai", "openai", "anthropic", "claude", "gemini", "llm", "api", "wrapper"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
@@ -37,13 +36,13 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/vsharha/multi-ai-handler"
-Repository = "https://github.com/vsharha/multi-ai-handler"
-Issues = "https://github.com/vsharha/multi-ai-handler/issues"
+Homepage = "https://github.com/vsharha/litellm_utils"
+Repository = "https://github.com/vsharha/litellm_utils"
+Issues = "https://github.com/vsharha/litellm_utils/issues"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["multi_ai_handler"]
+packages = ["litellm_utils"]
