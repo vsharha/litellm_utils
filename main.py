@@ -29,14 +29,14 @@ def stream_example():
 
 
 def json_example():
-    print(request_ai(
+    print(json.dumps(request_ai(
         provider="ollama",
         model="gpt-oss",
         system_prompt="You're an intelligent json converter tool",
         user_text="Convert to json",
         file="test/2024-10-31_aliexpress_02.pdf",
         json_output=True,
-    ))
+    ), indent=4))
 
 
 def list_models_example():
