@@ -23,7 +23,7 @@ class Conversation:
         user_text: str | None = None,
         file: str | Path | dict | None = None,
         json_output: bool = False,
-        preprocess_file_content: bool = False,
+        preprocess_file_content: bool | None = None,
     ) -> str | dict:
         response = request_ai(
             provider=self.provider,
@@ -50,7 +50,7 @@ class Conversation:
         self,
         user_text: str | None = None,
         file: str | Path | dict | None = None,
-        preprocess_file_content: bool = False,
+        preprocess_file_content: bool | None = None,
     ) -> Iterator[str]:
         full_response = ""
 
