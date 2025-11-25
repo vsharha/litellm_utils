@@ -70,4 +70,4 @@ def conversation_example():
 
 
 if __name__ == "__main__":
-    print(json_example())
+    print(supports_pdf_input("gemini", "gemini-2.5-pro"))
