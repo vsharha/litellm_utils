@@ -30,8 +30,8 @@ def stream_example():
 
 def json_example():
     print(request_ai(
-        provider="cerebras",
-        model="llama-3.3-70b",
+        provider="gemini",
+        model="gemini-2.5-pro",
         system_prompt="You're an intelligent json converter tool",
         user_text="Convert to json",
         file="test/2024-10-31_aliexpress_02.pdf",
@@ -70,4 +70,4 @@ def conversation_example():
 
 
 if __name__ == "__main__":
-    print(supports_pdf_input("gemini", "gemini-2.5-pro"))
+    json_example()
