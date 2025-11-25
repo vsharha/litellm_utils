@@ -1,7 +1,7 @@
-from pathlib import Path
 import base64
 import io
 import logging
+import mimetypes
 
 try:
     from docling.document_converter import DocumentConverter, PdfFormatOption
@@ -18,19 +18,18 @@ except ImportError:
 
 logging.getLogger("docling").setLevel(logging.ERROR)
 
-def extract_structured_md(filename: str, encoded_data: str,  ocr_threshold:float = 0.1) -> str:
+def extract_structured_md(filename: str, encoded_data: str, ocr_threshold: float = 0.1) -> str:
     if not DOCLING_AVAILABLE:
         raise ImportError(
             "Docling is not installed (used for local file processing). Install it with: pip install litellm_utils[docling]"
         )
 
-    file_like = io.BytesIO(base64.b64decode(encoded_data))
-    ext = Path(filename).suffix.lower()
-    filename = filename
+    file_bytes = base64.b64decode(encoded_data)
+    mime_type, _ = mimetypes.guess_type(filename)
 
     format_options = None
 
-    if ext == '.pdf':
+    if mime_type == 'application/pdf':
         table_opts = TableStructureOptions(
             mode=TableFormerMode.ACCURATE,
             do_cell_matching=True
@@ -39,7 +38,6 @@ def extract_structured_md(filename: str, encoded_data: str,  ocr_threshold:float
         ocr_opts = EasyOcrOptions(
             lang=["en"],
             force_full_page_ocr=False,
-            # confidence_threshold=0.5,
             bitmap_area_threshold=ocr_threshold
         )
 
@@ -55,8 +53,7 @@ def extract_structured_md(filename: str, encoded_data: str,  ocr_threshold:float
         format_options=format_options
     )
 
-    file_bytes = file_like.read()
-    doc_stream = DocumentStream(name=filename,stream=BytesIO(file_bytes))
+    doc_stream = DocumentStream(name=filename, stream=io.BytesIO(file_bytes))
     result = converter.convert(doc_stream)
     md = result.document.export_to_markdown()
     return md
