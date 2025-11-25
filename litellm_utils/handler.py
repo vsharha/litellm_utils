@@ -9,17 +9,20 @@ from litellm_utils.generate_payload import generate_openai_payload
 from litellm_utils.utils import parse_ai_response
 
 
-def supports_pdf_input(provider: str, model: str) -> bool:
+def requires_preprocessing(provider: str, model: str) -> bool:
     model_name = f"{provider}/{model}"
 
-    model_info = get_model_info(model_name)
+    try:
+        model_info = get_model_info(model_name)
+    except:
+        return False
 
-    return "supports_pdf_input" in model_info and model_info.get("supports_pdf_input") == True
+    return "supports_pdf_input" not in model_info or model_info.get("supports_pdf_input") != True
 
 def request_ai(provider: str, model: str, system_prompt: str | None=None, user_text: str=None, messages: list[dict]=None, file: str | Path | dict | None=None, temperature: float=0.2, preprocess_file_content: bool=False, json_output: bool=False) -> str | dict:
     model_name = f"{provider}/{model}"
 
-    if not supports_pdf_input(provider, model):
+    if requires_preprocessing(provider, model):
         preprocess_file_content = True
 
     payload: list = generate_openai_payload(user_text, system_prompt, file, preprocess_file_content, messages)
@@ -39,7 +42,7 @@ def request_ai(provider: str, model: str, system_prompt: str | None=None, user_t
 def stream_ai(provider: str, model: str, system_prompt: str | None=None, user_text: str=None, messages: list[dict]=None, file: str | Path | dict | None=None, temperature: float=0.2, preprocess_file_content: bool=False) -> Iterator[str]:
     model_name = f"{provider}/{model}"
 
-    if not supports_pdf_input(provider, model):
+    if not requires_preprocessing(provider, model):
         preprocess_file_content = True
 
     payload: list = generate_openai_payload(user_text, system_prompt, file, preprocess_file_content, messages)

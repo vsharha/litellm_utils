@@ -3,13 +3,13 @@ import json
 from litellm import get_model_info
 
 from litellm_utils import Conversation
-from litellm_utils.handler import request_ai, stream_ai, list_models, supports_pdf_input
+from litellm_utils.handler import request_ai, stream_ai, list_models, requires_preprocessing
 
 
 def basic_example():
     response = request_ai(
-        provider="openai",
-        model="gpt-4o-mini",
+        provider="anthropic",
+        model="claude-opus-4-5",
         system_prompt="You are a helpful assistant",
         user_text="What is the capital of France?"
     )
@@ -70,4 +70,4 @@ def conversation_example():
 
 
 if __name__ == "__main__":
-    json_example()
+    basic_example()
