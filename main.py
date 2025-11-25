@@ -2,6 +2,7 @@ import json
 
 from litellm import get_model_info
 
+from multi_ai_handler import Conversation
 from multi_ai_handler.handler import request_ai, stream_ai, list_models, supports_pdf_input
 
 
@@ -42,5 +43,31 @@ def list_models_example():
     print(json.dumps(list(list_models("cerebras")), indent=4))
 
 
+def conversation_example():
+    conv = Conversation(
+        provider="ollama",
+        model="gpt-oss",
+        system_prompt="You are a helpful assistant",
+        temperature=0.7
+    )
+
+    print("Turn 1:")
+    for chunk in conv.stream("What is Python?"):
+        print(chunk, end="", flush=True)
+    print("\n")
+
+    print("Turn 2:")
+    for chunk in conv.stream("What are its main features?"):
+        print(chunk, end="", flush=True)
+    print("\n")
+
+    print("Turn 3:")
+    for chunk in conv.stream("Give me a simple code example"):
+        print(chunk, end="", flush=True)
+    print("\n")
+
+    print(f"\nConversation history length: {len(conv.get_history())} messages")
+
+
 if __name__ == "__main__":
-    print(supports_pdf_input("anthropic", "claude-4-sonnet-20250514"))
+    conversation_example()

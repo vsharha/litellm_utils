@@ -7,6 +7,7 @@ import json
 from litellm import get_model_info
 
 from multi_ai_handler.generate_payload import generate_openai_payload
+from multi_ai_handler.utils import parse_ai_response
 
 
 def supports_pdf_input(provider: str, model: str) -> bool:
