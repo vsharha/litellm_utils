@@ -61,7 +61,8 @@ def build_openai_user_content(user_text: str | None, file: str | Path | dict | N
         else:
             mime_type, _ = mimetypes.guess_type(filename)
             if not mime_type:
-                raise ValueError("Could not detect MIME type from filename.")
+                logger.warning(f"Could not detect MIME type for {filename}, using application/octet-stream")
+                mime_type = "application/octet-stream"
 
             if user_text:
                 content.append({
@@ -76,7 +77,8 @@ def build_openai_user_content(user_text: str | None, file: str | Path | dict | N
                     "type": "image_url",
                     "image_url": {"url": data_url}
                 })
-            elif mime_type == "application/pdf":
+            else:
+                # Handle all non-image files (PDFs, documents, text files, etc.)
                 content.append({
                     "type": "file",
                     "file": {
