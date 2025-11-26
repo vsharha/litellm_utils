@@ -43,11 +43,10 @@ def _validate_preprocessing_config(
 def request_ai(provider: str, model: str, system_prompt: str | None=None, user_text: str | None=None, messages: list[dict]=None, file: str | Path | dict | list[str | Path | dict] | None=None, temperature: float=0.2, preprocess_file_content: bool | None=None, json_output: bool=False) -> str | dict:
     model_name = f"{provider}/{model}"
 
-    if file is not None:
+    if file is not None and preprocess_file_content is None:
         needs_preprocessing = _validate_preprocessing_config(provider, model, preprocess_file_content)
 
-        if preprocess_file_content is None:
-            preprocess_file_content = needs_preprocessing
+        preprocess_file_content = needs_preprocessing
 
     payload: list = generate_openai_payload(user_text, system_prompt, file, preprocess_file_content, messages)
 
@@ -66,11 +65,10 @@ def request_ai(provider: str, model: str, system_prompt: str | None=None, user_t
 def stream_ai(provider: str, model: str, system_prompt: str | None=None, user_text: str | None=None, messages: list[dict]=None, file: str | Path | dict | list[str | Path | dict] | None=None, temperature: float=0.2, preprocess_file_content: bool | None=None) -> Iterator[str]:
     model_name = f"{provider}/{model}"
 
-    if file is not None:
+    if file is not None and preprocess_file_content is None:
         needs_preprocessing = _validate_preprocessing_config(provider, model, preprocess_file_content)
 
-        if preprocess_file_content is None:
-            preprocess_file_content = needs_preprocessing
+        preprocess_file_content = needs_preprocessing
 
     payload: list = generate_openai_payload(user_text, system_prompt, file, preprocess_file_content, messages)
 

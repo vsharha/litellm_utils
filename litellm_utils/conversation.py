@@ -2,6 +2,7 @@ from typing import Iterator
 from pathlib import Path
 
 from litellm_utils.handler import request_ai, stream_ai
+from litellm_utils.generate_payload import build_openai_user_content
 
 
 class Conversation:
@@ -37,12 +38,11 @@ class Conversation:
             json_output=json_output,
         )
 
-        if isinstance(response, str):
-            self.messages.append({"role": "user", "content": user_text})
-            self.messages.append({"role": "assistant", "content": response})
-        else:
-            self.messages.append({"role": "user", "content": user_text})
-            self.messages.append({"role": "assistant", "content": str(response)})
+        # Build proper user content (includes files if provided)
+        user_content = build_openai_user_content(user_text, file, preprocess_file_content or False)
+
+        self.messages.append({"role": "user", "content": user_content})
+        self.messages.append({"role": "assistant", "content": str(response)})
 
         return response
 
@@ -67,7 +67,10 @@ class Conversation:
             full_response += chunk
             yield chunk
 
-        self.messages.append({"role": "user", "content": user_text})
+        # Build proper user content (includes files if provided)
+        user_content = build_openai_user_content(user_text, file, preprocess_file_content or False)
+
+        self.messages.append({"role": "user", "content": user_content})
         self.messages.append({"role": "assistant", "content": full_response})
 
     def get_history(self) -> list[dict]:
