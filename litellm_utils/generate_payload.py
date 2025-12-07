@@ -37,7 +37,7 @@ def process_local_file(filename: str, encoded_data: str) -> str:
 """)
 
 
-def build_openai_user_content(user_text: str | None, file: str | Path | dict | list[str | Path | dict] | None=None, preprocess_file_content: bool=False) -> list[dict[str, Any]]:
+def build_openai_user_content(user_text: str | None = None, file: str | Path | dict | list[str | Path | dict] | None=None, preprocess_file_content: bool=False) -> list[dict[str, Any]]:
     if not file and not user_text:
         raise ValueError("Either filename or user_text must be provided.")
 
@@ -105,7 +105,7 @@ def build_openai_user_content(user_text: str | None, file: str | Path | dict | l
     return content
 
 
-def generate_openai_payload(user_text: str | None, system_prompt: str, file: str | Path | dict | list[str | Path | dict] | None=None, preprocess_file_content: bool=False, messages: list[dict] | None=None) -> list[dict[str, Any]]:
+def generate_openai_payload(user_text: str | None = None, system_prompt: str | None = None, file: str | Path | dict | list[str | Path | dict] | None=None, preprocess_file_content: bool=False, messages: list[dict] | None=None) -> list[dict[str, Any]]:
     result = []
 
     if system_prompt:
