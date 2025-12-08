@@ -20,7 +20,7 @@ logging.getLogger("docling").setLevel(logging.ERROR)
 def extract_structured_md(filename: str, encoded_data: str, ocr_threshold: float = 0.1) -> str:
     if not DOCLING_AVAILABLE:
         raise ImportError(
-            "Docling is not installed (used for local file processing). Install it with: pip install litellm_utils[docling]"
+            "Docling is not installed (used for local file processing). Install it with: pip install \"litellm_utils[docling]\""
         )
 
     # mime_type, _ = mimetypes.guess_type(filename)
