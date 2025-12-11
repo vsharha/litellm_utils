@@ -1,35 +1,18 @@
 import mimetypes
 from typing import Any
-import base64
 from pathlib import Path
 import logging
 
 from litellm_utils.extract_md import extract_structured_md
+from litellm_utils.utils import process_file
 
 logger = logging.getLogger("litellm_utils")
 
-def _process_file(file: str | Path | dict | None) -> tuple[str | None, str | None]:
-    if file is None:
-        return None, None
 
-    if isinstance(file, dict):
-        return file.get("filename"), file.get("encoded_data")
+def process_local_file(file: str | Path | dict) -> str:
+    filename, _ = process_file(file)
 
-    file_path = Path(file)
-    if not file_path.exists():
-        raise FileNotFoundError(f"File not found: {file_path}")
-    if not file_path.is_file():
-        raise ValueError(f"Path is not a file: {file_path}")
-
-    with open(file_path, "rb") as f:
-        file_data = f.read()
-
-    encoded = base64.b64encode(file_data).decode()
-    return file_path.name, encoded
-
-
-def process_local_file(filename: str, encoded_data: str) -> str:
-    file_text = extract_structured_md(filename, encoded_data)
+    file_text = extract_structured_md(file)
     return (f"""
 <<<FILE CONTENT ({filename})>>>
 {file_text}
@@ -60,9 +43,8 @@ def build_openai_user_content(user_text: str | None = None, file: str | Path | d
         if preprocess_file_content:
             file_texts = []
             for f in files:
-                filename, encoded_data = _process_file(f)
-                logger.info(f"Preprocessing file content locally for: {filename}")
-                file_texts.append(process_local_file(filename, encoded_data))
+                logger.info(f"Preprocessing file content locally")
+                file_texts.append(process_local_file(file))
 
             combined_text = (user_text + "\n" if user_text else "") + "\n".join(file_texts)
             content.append({
@@ -79,7 +61,7 @@ def build_openai_user_content(user_text: str | None = None, file: str | Path | d
 
             # Add each file to content
             for f in files:
-                filename, encoded_data = _process_file(f)
+                filename, encoded_data = process_file(f)
                 mime_type, _ = mimetypes.guess_type(filename)
                 if not mime_type:
                     logger.warning(f"Could not detect MIME type for {filename}, using application/octet-stream")

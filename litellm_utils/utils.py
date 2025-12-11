@@ -1,4 +1,25 @@
 import json
+from pathlib import Path
+import base64
+
+def process_file(file: str | Path | dict | None) -> tuple[str | None, str | None]:
+    if file is None:
+        return None, None
+
+    if isinstance(file, dict):
+        return file.get("filename"), file.get("encoded_data")
+
+    file_path = Path(file)
+    if not file_path.exists():
+        raise FileNotFoundError(f"File not found: {file_path}")
+    if not file_path.is_file():
+        raise ValueError(f"Path is not a file: {file_path}")
+
+    with open(file_path, "rb") as f:
+        file_data = f.read()
+
+    encoded = base64.b64encode(file_data).decode()
+    return file_path.name, encoded
 
 def parse_ai_response(response_text: str) -> dict:
     response_text = response_text.strip()

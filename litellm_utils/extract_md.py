@@ -1,6 +1,9 @@
 import base64
 import io
 import logging
+from pathlib import Path
+
+from litellm_utils.utils import process_file
 
 try:
     from docling.document_converter import DocumentConverter, PdfFormatOption
@@ -17,7 +20,7 @@ except ImportError:
 
 logging.getLogger("docling").setLevel(logging.ERROR)
 
-def extract_structured_md(filename: str, encoded_data: str, ocr_threshold: float = 0.1) -> str:
+def extract_structured_md(file: str | Path | dict, ocr_threshold: float = 0.1) -> str:
     if not DOCLING_AVAILABLE:
         raise ImportError(
             "Docling is not installed (used for local file processing). Install it with: pip install \"litellm_utils[docling]\""
@@ -47,6 +50,8 @@ def extract_structured_md(filename: str, encoded_data: str, ocr_threshold: float
     converter = DocumentConverter(
         format_options=format_options
     )
+
+    filename, encoded_data = process_file(file)
 
     file_bytes = base64.b64decode(encoded_data)
     doc_stream = DocumentStream(name=filename, stream=io.BytesIO(file_bytes))
