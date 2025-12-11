@@ -5,6 +5,7 @@ import litellm
 from pathlib import Path
 
 from litellm import get_model_info
+from pydantic import BaseModel
 
 from litellm_utils.generate_payload import generate_openai_payload
 from litellm_utils.utils import parse_ai_response
@@ -34,8 +35,6 @@ def _validate_preprocessing_config(
         )
 
     return needs_preprocessing
-
-
 
 def request_ai(
         model: str,
