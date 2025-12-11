@@ -8,12 +8,10 @@ from litellm_utils.generate_payload import build_openai_user_content
 class Conversation:
     def __init__(
         self,
-        provider: str,
         model: str,
         system_prompt: str | None = None,
         temperature: float = 0.2,
     ):
-        self.provider = provider
         self.model = model
         self.system_prompt = system_prompt
         self.temperature = temperature
@@ -27,7 +25,6 @@ class Conversation:
         preprocess_file_content: bool | None = None,
     ) -> str | dict:
         response = request_ai(
-            provider=self.provider,
             model=self.model,
             system_prompt=self.system_prompt if not self.messages else None,
             user_text=user_text,
@@ -55,7 +52,6 @@ class Conversation:
         full_response = ""
 
         for chunk in stream_ai(
-            provider=self.provider,
             model=self.model,
             system_prompt=self.system_prompt if not self.messages else None,
             user_text=user_text,
@@ -83,4 +79,4 @@ class Conversation:
         self.system_prompt = system_prompt
 
     def __repr__(self) -> str:
-        return f"Conversation(provider='{self.provider}', model='{self.model}', messages={len(self.messages)})"
+        return f"Conversation(model='{self.model}', messages={len(self.messages)})"
