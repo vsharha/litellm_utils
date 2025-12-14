@@ -2,6 +2,7 @@ import logging
 
 from litellm_utils.conversation import Conversation
 from litellm_utils.handler import request_ai, stream_ai, list_models
+from litellm_utils.generate_payload import build_openai_user_content, generate_openai_payload
 
 # Configure logger
 logger = logging.getLogger("litellm_utils")
@@ -14,4 +15,12 @@ if not logger.handlers:
     handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
     logger.addHandler(handler)
 
-__all__ = ["Conversation", "request_ai", "stream_ai", "list_models", "logger"]
+__all__ = [
+    "Conversation",
+    "request_ai",
+    "stream_ai",
+    "list_models",
+    "logger",
+    "build_openai_user_content",
+    "generate_openai_payload"
+]
