@@ -1,15 +1,14 @@
 import mimetypes
-from typing import Any
-from pathlib import Path
+from typing import Any, Optional
 import logging
 
 from litellm_utils.extract_md import extract_structured_md
+from litellm_utils.types import FileType
 from litellm_utils.utils import process_file
 
 logger = logging.getLogger("litellm_utils")
 
-
-def process_local_file(file: str | Path | dict) -> str:
+def process_local_file(file: FileType) -> str:
     filename, _ = process_file(file)
 
     file_text = extract_structured_md(file)
@@ -20,7 +19,7 @@ def process_local_file(file: str | Path | dict) -> str:
 """)
 
 
-def build_openai_user_content(user_text: str | None = None, file: str | Path | dict | list[str | Path | dict] | None=None, preprocess_file_content: bool=False) -> list[dict[str, Any]]:
+def build_openai_user_content(user_text: Optional[str]=None, file: Optional[FileType | list[FileType]]=None, preprocess_file_content: bool=False) -> list[dict[str, Any]]:
     if not file and not user_text:
         raise ValueError("Either filename or user_text must be provided.")
 
@@ -86,8 +85,7 @@ def build_openai_user_content(user_text: str | None = None, file: str | Path | d
 
     return content
 
-
-def generate_openai_payload(user_text: str | None = None, system_prompt: str | None = None, file: str | Path | dict | list[str | Path | dict] | None=None, preprocess_file_content: bool=False, messages: list[dict] | None=None) -> list[dict[str, Any]]:
+def generate_openai_payload(user_text: Optional[str]=None, system_prompt: Optional[str]=None, file: Optional[FileType | list[FileType]]=None, preprocess_file_content: bool=False, messages: Optional[list[dict]]=None) -> list[dict[str, Any]]:
     result = []
 
     if system_prompt:

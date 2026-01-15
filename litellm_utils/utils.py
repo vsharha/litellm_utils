@@ -1,8 +1,11 @@
 import json
 from pathlib import Path
 import base64
+from typing import Optional
 
-def process_file(file: str | Path | dict | None) -> tuple[str | None, str | None]:
+from litellm_utils.types import FileType
+
+def process_file(file: Optional[FileType]) -> tuple[str | None, str | None]:
     if file is None:
         return None, None
 

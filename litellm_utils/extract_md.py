@@ -3,6 +3,7 @@ import io
 import logging
 from pathlib import Path
 
+from litellm_utils.types import FileType
 from litellm_utils.utils import process_file
 
 try:
@@ -20,7 +21,7 @@ except ImportError:
 
 logging.getLogger("docling").setLevel(logging.ERROR)
 
-def extract_structured_md(file: str | Path | dict, ocr_threshold: float = 0.1) -> str:
+def extract_structured_md(file: FileType , ocr_threshold: float = 0.1) -> str:
     if not DOCLING_AVAILABLE:
         raise ImportError(
             "Docling is not installed (used for local file processing). Install it with: pip install \"litellm_utils[docling]\""

@@ -1,5 +1,5 @@
 import logging
-from typing import Iterator
+from typing import Iterator, Optional
 
 import litellm
 from pathlib import Path
@@ -8,6 +8,7 @@ from litellm import get_model_info
 from pydantic import BaseModel
 
 from litellm_utils.generate_payload import generate_openai_payload
+from litellm_utils.types import FileType
 from litellm_utils.utils import parse_ai_response
 
 logger = logging.getLogger("litellm_utils")
@@ -25,7 +26,7 @@ def requires_preprocessing(model: str) -> bool:
 
 def _validate_preprocessing_config(
     model: str,
-    preprocess_file_content: bool | None,
+    preprocess_file_content: Optional[bool],
 ) -> bool:
     needs_preprocessing = requires_preprocessing(model)
 
@@ -38,12 +39,12 @@ def _validate_preprocessing_config(
 
 def request_ai(
         model: str,
-        system_prompt: str | None=None,
-        user_text: str | None=None,
+        system_prompt: Optional[str]=None,
+        user_text: Optional[str]=None,
         messages: list[dict]=None,
-        file: str | Path | dict | list[str | Path | dict] | None=None,
+        file: Optional[FileType | list[FileType]]=None,
         temperature: float=0.2,
-        preprocess_file_content: bool | None=None,
+        preprocess_file_content: Optional[bool]=None,
         json_output: bool=False
     ) -> str | dict:
     if file is not None and preprocess_file_content is None:
@@ -67,12 +68,12 @@ def request_ai(
 
 def stream_ai(
         model: str,
-        system_prompt: str | None=None,
-        user_text: str | None=None,
+        system_prompt: Optional[str]=None,
+        user_text: Optional[str]=None,
         messages: list[dict]=None,
-        file: str | Path | dict | list[str | Path | dict] | None=None,
+        file: Optional[FileType | list[FileType]]=None,
         temperature: float=0.2,
-        preprocess_file_content: bool | None=None
+        preprocess_file_content: Optional[bool]=None
     ) -> Iterator[str]:
     if file is not None and preprocess_file_content is None:
         needs_preprocessing = _validate_preprocessing_config(model, preprocess_file_content)

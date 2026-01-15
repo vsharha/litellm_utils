@@ -1,5 +1,7 @@
-from typing import Iterator
+from typing import Iterator, Optional
 from pathlib import Path
+
+from litellm_utils.types import FileType
 
 from litellm_utils.handler import request_ai, stream_ai
 from litellm_utils.generate_payload import build_openai_user_content
@@ -9,7 +11,7 @@ class Conversation:
     def __init__(
         self,
         model: str,
-        system_prompt: str | None = None,
+        system_prompt: Optional[str] = None,
         temperature: float = 0.2,
     ):
         self.model = model
@@ -19,10 +21,10 @@ class Conversation:
 
     def send(
         self,
-        user_text: str | None = None,
-        file: str | Path | dict | list[str | Path | dict] | None = None,
+        user_text: Optional[str] = None,
+        file: Optional[FileType | list[FileType]] = None,
         json_output: bool = False,
-        preprocess_file_content: bool | None = None,
+        preprocess_file_content: Optional[bool] = None,
     ) -> str | dict:
         response = request_ai(
             model=self.model,
@@ -45,9 +47,9 @@ class Conversation:
 
     def stream(
         self,
-        user_text: str | None = None,
-        file: str | Path | dict | list[str | Path | dict] | None = None,
-        preprocess_file_content: bool | None = None,
+        user_text: Optional[str] = None,
+        file: Optional[FileType | list[FileType]] = None,
+        preprocess_file_content: Optional[bool] = None,
     ) -> Iterator[str]:
         full_response = ""
 

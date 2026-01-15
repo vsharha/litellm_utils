@@ -1,8 +1,10 @@
 from pathlib import Path
+from typing import Optional
 
 from pydantic import BaseModel
 
 from litellm_utils.handler import request_ai
+from litellm_utils.types import FileType
 
 class ModelPriority(BaseModel):
     model: str
@@ -22,12 +24,12 @@ class LiteLLMUtils:
 
     def request_ai(
         self,
-        system_prompt: str | None = None,
-        user_text: str | None = None,
+        system_prompt: Optional[str] = None,
+        user_text: Optional[str] = None,
         messages: list[dict] = None,
-        file: str | Path | dict | list[str | Path | dict] | None = None,
+        file: Optional[FileType | list[FileType]] = None,
         temperature: float = 0.2,
-        preprocess_file_content: bool | None = None,
+        preprocess_file_content: Optional[bool] = None,
         json_output: bool = False
     ):
         request_ai(
