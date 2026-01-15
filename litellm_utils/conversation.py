@@ -1,5 +1,4 @@
 from typing import Iterator, Optional
-from pathlib import Path
 
 from litellm_utils.types import FileType
 

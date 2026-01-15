@@ -1,7 +1,6 @@
 import base64
 import io
 import logging
-from pathlib import Path
 
 from litellm_utils.types import FileType
 from litellm_utils.utils import process_file
