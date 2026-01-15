@@ -45,7 +45,7 @@ See [LiteLLM documentation](https://docs.litellm.ai/docs/providers) for all supp
 from litellm_utils import request_ai
 
 response = request_ai(
-    provider="google",  # or "anthropic", "openai", "openrouter", "cerebras", "ollama"
+    provider="gemini",  # or "anthropic", "openai", "openrouter", "cerebras", "ollama"
     model="gemini-2.5-flash",
     system_prompt="You are a helpful assistant.",
     user_text="What is the capital of France?"
@@ -134,7 +134,7 @@ for chunk in conv.stream("Tell me a story"):
 With file processing:
 
 ```python
-conv = Conversation(provider="google", model="gemini-2.0-flash")
+conv = Conversation(provider="gemini", model="gemini-2.0-flash")
 
 # Single file
 response = conv.send("Summarize this document", file="report.pdf")
@@ -166,7 +166,7 @@ anthropic_models = list_models("anthropic")
 Generate a response from an AI model.
 
 **Parameters:**
-- `provider` (str): Provider name (e.g., `"openai"`, `"anthropic"`, `"google"`)
+- `provider` (str): Provider name (e.g., `"openai"`, `"anthropic"`, `"gemini"`)
 - `model` (str): Model name (e.g., `"gpt-4o-mini"`, `"claude-sonnet-4-20250514"`)
 - `system_prompt` (str, optional): System instruction
 - `user_text` (str, optional): User input text
